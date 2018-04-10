@@ -1,0 +1,30 @@
+<form>
+  <label>AQP Top 6 UTC Errors - Dashboard</label>
+  <fieldset autoRun="false">
+    <input type="time">
+      <default>Last 60 minutes</default>
+    </input>
+  </fieldset>
+  <row>
+    <panel>
+      <table>
+        <title>AQP-SA Top 6 UTC Errors</title>
+        <searchTemplate>index=jra_app_events sourcetype="eventing" ear="PUZTS*" logLevel="warn" text="*UserImpactError" "GeneralError" `AQP_SA_UTC_MSGID_FILTER`  |
+ eval AQP_GENMSG=if(rootCauseMessage==" ",rootCauseName,AQP_GENMSG) | eval rootCauseMessage=if(rootCauseMessage==" ",rootCauseName,rootCauseMessage) | 
+ eval AQP_GENMSG=if(AQP_GENMSG=="NEW MESSAGE",rootCauseMessage,AQP_GENMSG)  | 
+ eval Source=if(Infra_Related=="TRUE","Infra","App") | eval value=split(Service_Facade_context_,",") | 
+ eval Requesttemp = mvindex (value ,0) | eval Requestid2 = substr (Requesttemp,14) |
+ eval requestId=if(AQP_MSGID=="675",Requestid2,requestId) | dedup requestId |stats count by AQP_GENMSG,Source,TrackingNumber| rename AQP_GENMSG as "Error Description"| sort count d | Head 6</searchTemplate>
+      </table>
+    </panel>
+  </row>
+  
+ <row>
+    <panel>
+      <table>
+        <title>AQP-C Top 6 UTC Errors</title>
+        <searchTemplate>index=jra_app_events sourcetype="eventing" ear="PUVOK*" logLevel="warn" text="*UserImpactError" "GeneralError" `AQP_CUSTOMER_UTC_MSGID_FILTER` | eval AQP_GENMSG=if(rootCauseMessage==" ",rootCauseName,AQP_GENMSG)  | eval rootCauseMessage=if(rootCauseMessage==" ",rootCauseName,rootCauseMessage)  | eval AQP_GENMSG=if(AQP_GENMSG=="NEW MESSAGE",rootCauseMessage,AQP_GENMSG) | eval Source=if(Infra_Related=="TRUE","Infra","App") |dedup requestId| stats count by AQP_GENMSG,Source,TrackingNumber |rename AQP_GENMSG as "Error Description"| sort count d | Head 6</searchTemplate>
+      </table>
+    </panel>
+  </row>
+  </form>
