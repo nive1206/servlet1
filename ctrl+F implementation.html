@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title></title>
+
+<script type="text/javascript">
+
+function searchForName()
+{
+	inputBox = document.getElementById("myInput")
+	searchPhrase = inputBox.value
+	ul = document.getElementById("myUL")
+	li=ul.getElementsByTagName("li")
+	
+	for(i=0 ; i < li.length ; i++)
+	{
+		if(li[i].getElementsByTagName("a")[0].innerHTML == searchPhrase)
+		{
+			li[i].style.display = "block"
+		}
+		else
+		{
+			li[i].style.display = "none"
+		}		
+	}	
+}
+
+function showAllNames()
+{
+	ul = document.getElementById("myUL")
+	li=ul.getElementsByTagName("li")
+
+	for(i=0 ; i < li.length ; i++)
+	{
+		li[i].style.display = "block"	
+	}
+}
+
+function clearSearch()
+{
+	ul = document.getElementById("myUL")
+	li=ul.getElementsByTagName("li")
+
+	for(i=0 ; i < li.length ; i++)
+	{
+		li[i].style.display = "block"	
+	}		
+}
+
+
+</script>
+
+
+</head>
+<body>
+
+<input type="text" id="myInput" onkeyup="searchForName()" onfocus="showAllNames()" placeholder="Search for names..">
+
+<input id="clearSearchButton" type="button" value="clear search" onclick="clearSearch()">
+
+<ul id="myUL">
+  <li><a href="#">Adele</a></li>
+  <li><a href="#">Agnes</a></li>
+
+  <li><a href="#">Billy</a></li>
+  <li><a href="#">Bob</a></li>
+
+  <li><a href="#">Calvin</a></li>
+  <li><a href="#">Christina</a></li>
+  <li><a href="#">Cindy</a></li>
+</ul>
+
+
+</body>
+</html>
