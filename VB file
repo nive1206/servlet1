@@ -1,0 +1,11 @@
+Set objExcel = CreateObject("Excel.Application")
+Set objWorkbook = objExcel.Workbooks.Open("C:/Users/wvs7/Desktop/BankReport.xlsm")
+objExcel.visible = true
+
+if  WScript.Arguments.Item(0) = 0 then
+	objExcel.Run "MonthlyReport" 
+else
+	objExcel.Run "MidMonthReport" 
+end if
+
+objExcel.Quit
