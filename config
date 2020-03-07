@@ -1,0 +1,203 @@
+package com.gsc.sample;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.charset.Charset;
+import java.util.Base64;
+import java.util.Scanner;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.util.EntityUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.auth.UsernamePasswordCredentials;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.impl.auth.BasicScheme;
+import org.apache.http.impl.client.DefaultHttpClient;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.DocumentBuilder;
+import org.apache.http.util.EntityUtils;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.xml.sax.SAXException;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntity;
+
+public class Config {
+
+	
+
+
+
+	//private static final String Authorization = null;
+	 
+
+
+	public static void main(String[] args) {
+		// creating object of Main class
+		Config main = new Config(); // creating the object of the class
+        System.out.println("Main class object created");
+        
+        // storing username & password in credentials by calling method readCredentials
+        String credentials = main.readCredentials("C:\\Users\\nusingh\\Desktop\\Jenkins\\config\\credentials.txt");
+        System.out.println(credentials);
+        System.out.println("Credentials read sucessfully from file");
+        // sending 1st request (get) and storing the crumb value in crumb variable
+        String crumb = main.sendGetRequest("http://129.146.59.178:8080/crumbIssuer/api/json",credentials);
+
+        System.out.println("Get request processed successfully. crumb value obtained");
+        
+        // sending 2nd request (post). passing crumb value and xml file with it
+        main.sendPostRequest("http://129.146.59.178:8080/createItem?name=Demo","C:\\Users\\nusingh\\Desktop\\config.xml",crumb,credentials);
+        System.out.println("Post request processed successfully");
+        
+        System.out.println("DONE !!");
+    }
+
+
+    
+    	public String readCredentials(String fileName)
+	    {
+    		String authorization = "";
+    		
+		 try{
+			
+				FileReader reader=new FileReader("C:\\Users\\nusingh\\Desktop\\Jenkins\\config\\credentials.txt");
+				Scanner in= new Scanner(reader);
+		        
+		        while (in.hasNextLine()) {
+		        	
+		            String line=in.nextLine();
+		            //System.out.println(line);
+		            String stringValue = line;
+		            authorization = Base64.getEncoder().encodeToString(stringValue.getBytes());
+		            System.out.println(stringValue  + " = " + authorization);
+		            
+		           
+		            
+					
+		        }
+		        return authorization;
+		        
+		    }
+		    catch (IOException exception){
+		        System.out.println("Error processing file:" +exception);
+		        return authorization;
+		    }
+		
+		 
+		
+		
+		    }
+
+
+    public String sendGetRequest(String url, String authorization) 
+    {
+
+		URLConnection urlConn = null;
+		 String crumb="";
+		String inputLine	="";
+		String Jenkinscrumb="";
+		try {
+		JSONParser parser = new JSONParser();
+		URL url1 = new URL("http://129.146.59.178:8080/crumbIssuer/api/json");
+		
+		urlConn = url1.openConnection();
+		urlConn.setRequestProperty("Authorization", "Basic " + authorization);
+		
+		BufferedReader buff = new BufferedReader(new InputStreamReader(
+				urlConn.getInputStream()));
+		
+		   while ((inputLine = buff.readLine()) != null) 
+			// System.out.println(inputLine);
+		   Jenkinscrumb=inputLine.toString();
+		   System.out.println(Jenkinscrumb);
+        
+		   String[] arrOfStr = Jenkinscrumb.split(",", -2); 
+		   System.out.println(arrOfStr[1]);  
+		   String crumb1 = arrOfStr[1].substring(1);
+           crumb1 = crumb1.split(":")[1];
+           System.out.println(crumb1);
+          crumb=crumb1.replace("\"","");
+          System.out.println(crumb);
+		   //return crumb;
+		   }
+		catch (IOException e) {
+
+e.printStackTrace();
+	}
+
+	return crumb;
+}
+	   
+
+	public void sendPostRequest (String url, String xmlFilePath, String crumb,String authorization) {
+		URLConnection urlConn = null;
+		//response.setContentType("text/html;charset=UTF-8");
+        try
+        {
+            // creating httpclient and request objects
+        	//DefaultHttpClient httpclient = new DefaultHttpClient(new BasicHttpParams());
+
+       //  HttpPost request = new HttpPost(url);
+        //	HttpResponse response = httpClient.execute(HttpPost);
+            URL url1 = new URL("http://129.146.59.178:8080/createItem?name=Demo");
+    		HttpURLConnection conn=(HttpURLConnection)url1.openConnection();
+    		conn.setRequestMethod("POST");
+    		//urlConn = url1.openConnection();
+    		conn.setRequestProperty("Authorization", "Basic " + authorization);
+    		
+    		//FileReader reader=new FileReader("C:\\Users\\nusingh\\Desktop\\config.xml");
+//System.out.println(reader);
+            // creating entity with the file you want to upload
+			/*
+			 * MultipartEntity entity = new MultipartEntity(); File xmlFile = new
+			 * File("C:\\Users\\nusingh\\Desktop\\config.xml"); entity.addPart("xmlFile",
+			 * new FileBody(xmlFile));
+			 */
+            
+    		
+            
+            File file = new File("C:\\Users\\nusingh\\Desktop\\config.xml");
+            
+            MultipartEntity multipartEntity = new MultipartEntity(HttpMultipartMode.STRICT);
+            multipartEntity.addPart("file", file);
+
+            conn.setRequestProperty("Content-Type", multipartEntity.getContentType().getValue());
+            OutputStream out = conn.getOutputStream();
+            try {
+                multipartEntity.writeTo(out);
+            } finally {
+                out.close();
+            }
+            int status = conn.getResponseCode();
+
+            // adding file entity and crumb value to request
+       //   request.setHeader("crumb",crumb);
+       //  request.setEntity(entity);
+            
+            // executing post request
+       //  httpclient.execute(request);
+        }
+        catch(Exception e)
+        {
+            e.printStackTrace();
+        }
+
+	}
+
+}
