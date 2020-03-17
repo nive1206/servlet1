@@ -1,0 +1,151 @@
+
+public class HttpConnect  {
+	//private static String crumb;
+
+	public static String sendGetRequest(String url, String authorization,JenkinsJob job) {
+		URLConnection urlConn = null;
+		 String crumb="";
+		String inputLine	="";
+		String Jenkinscrumb="";
+		try {
+			//JenkinsJob job=new JenkinsJob();
+		JSONParser parser = new JSONParser();
+		
+			/*
+			 * HttpPost request = new HttpPost(url); String authHeader = "Basic " +
+			 * authorization; request.setHeader(HttpHeaders.AUTHORIZATION, authHeader);
+			 */
+			
+			  URL url1 = new URL(url);
+			  
+			  urlConn = url1.openConnection(); urlConn.setRequestProperty("Authorization",
+			  "Basic " + authorization);
+			 
+		
+		BufferedReader buff = new BufferedReader(new InputStreamReader(
+				urlConn.getInputStream()));
+		
+		   while ((inputLine = buff.readLine()) != null) 
+			// System.out.println(inputLine);
+		   Jenkinscrumb=inputLine.toString();
+		   System.out.println(Jenkinscrumb);
+       
+		   String[] arrOfStr = Jenkinscrumb.split(",", -2); 
+		   System.out.println(arrOfStr[1]);  
+		   String crumb1 = arrOfStr[1].substring(1);
+          crumb1 = crumb1.split(":")[1];
+          System.out.println(crumb1);
+         crumb=crumb1.replace("\"","");
+         System.out.println(crumb);
+		   //return crumb;
+		   
+		//curl -s -XPOST 'http://example.com/createItem?name=yourJobName' -u username:API_TOKEN --data-binary @mylocalconfig.xml -H "Content-Type:text/xml"
+		
+         
+         //String[] command = {"curl -s -XPOST " +job.getUrl()+"/createItem?name="+job.getJobname()+"-u"+job.getUsername()+":"+ job.getToken() + "--data-binary" + job.getXmlFilePath()+ crumb+  "'content-Type:text/xml'"}; 
+		//curl -s -XPOST 'http://129.146.59.178:8080/createItem?name=yourdemo' -u devops:11dc8f66300e9e3550f66f0bb22f1fbf38 --data-binary @mylocalconfig.xml -H a915c770d8bad738c5ce8118d4b2384c8d78bfe52e76b4024ddf2398b256f86a -H "Content-Type:text/xml"
+ 		String command = "curl -s -XPOST " +job.getUrl()+"/createItem?name="+job.getJobname()+ "-u" +job.getUsername()+":"+ job.getToken() +  "--data-binary"  + job.getXmlFilePath()  +  crumb +   "'content-Type:text/xml'"; 
+
+         System.out.println(command);
+		ProcessBuilder process = new ProcessBuilder(command);
+		Process p;
+		
+			p = process.start();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			StringBuilder builder = new StringBuilder();
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				builder.append(line);
+				builder.append(System.getProperty("line.separator"));
+			}
+			String result = builder.toString();
+			System.out.print(result);
+
+		} catch (IOException e) {
+			System.out.print("error");
+			e.printStackTrace();
+		}
+	
+		
+		return crumb;
+
+	
+}
+
+
+
+	
+
+
+  public static void uploadCred(JenkinsJob job) {
+  
+  try { 
+	  String authorization = Authenticator.getAuthToken(job.getUsername(),job.getToken()); 
+  
+ 	String url = job.getUrl()+"/crumbIssuer/api/json";
+ 
+  	URLConnection urlConn = null;
+		 String crumb="";
+		String inputLine	="";
+		String Jenkinscrumb="";
+		try {
+			
+			  URL url1 = new URL(url);
+			  
+			  urlConn = url1.openConnection(); 
+			urlConn.setRequestProperty("Authorization", "Basic " + authorization);
+			 
+		
+		BufferedReader buff = new BufferedReader(new InputStreamReader(
+				urlConn.getInputStream()));
+		
+		   while ((inputLine = buff.readLine()) != null) 
+			// System.out.println(inputLine);
+		   Jenkinscrumb=inputLine.toString();
+		   System.out.println(Jenkinscrumb);
+       
+		   String[] arrOfStr = Jenkinscrumb.split(",", -2); 
+		   System.out.println(arrOfStr[1]);  
+		   String crumb1 = arrOfStr[1].substring(1);
+          crumb1 = crumb1.split(":")[1];
+          System.out.println(crumb1);
+         crumb=crumb1.replace("\"","");
+         System.out.println(crumb);
+		 
+	String command = "curl -X POST \\ -u " + job.getUsername()+":"+ job.getToken() 
+			  + " \\ -H \"Jenkins-Crumb:{" + crumb + "}\" "
+			  + "\\ -H  "content-type:application/xml\" "
+			 + "\\ -d @" + job.getXmlFilePath()
+			+ " \\ \""+job.getUrl()+"/job/top-folder/job/sub-folder/credentials/store/folder/domain/_/createCredentials\"";
+        
+         
+ 		 
+
+         System.out.println(command);
+		ProcessBuilder process = new ProcessBuilder(command);
+		Process p;
+		
+			p = process.start();
+			BufferedReader reader = new BufferedReader(new InputStreamReader(p.getInputStream()));
+			StringBuilder builder = new StringBuilder();
+			String line = null;
+			while ((line = reader.readLine()) != null) {
+				builder.append(line);
+				builder.append(System.getProperty("line.separator"));
+			}
+			String result = builder.toString();
+			System.out.print(result);
+
+		} catch (IOException e) {
+			System.out.print("error");
+			e.printStackTrace();
+		}
+	
+		
+		return crumb;
+    } catch (IOException e) { System.out.print("error"); e.printStackTrace(); }
+ 
+}
+}
+
+
