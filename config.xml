@@ -1,0 +1,85 @@
+
+<flow-definition plugin="workflow-job@2.36">
+<description/>
+<keepDependencies>false</keepDependencies>
+<properties>
+<hudson.plugins.jira.JiraProjectProperty plugin="jira@3.0.12"/>
+<EnvInjectJobProperty plugin="envinject@2.3.0">
+<info>
+<propertiesContent>
+#git source code details
+git_source_code_server=cneopsvm01
+git_source_code_repo=BRM_source.git
+source_code_path=BRM_source_code
+git_source_code_user=git
+git_source_code_branch=master
+
+#git config code details
+git_pipeline_server=cneopsvm01
+git_pipeline_repo=devops.git
+git_pipeline_user=git
+git_pipeline_branch=Devops
+
+#passing release number for image
+rel=12.0.0.2.0
+rel_no=r1
+
+#Passing paths to upload/download files from artifactory
+pattern_path=BRM
+art_repo_path=BRM/12.0.0.2.0/r1
+#targetpath
+
+#copyfiles from target to dockerpath 
+image1_actual_path=custom
+image1_target_path=devops/Docker/cm
+image2_actual_path=wallet
+image2_target_path=devops/Docker/dm
+image3_actual_path=restart_cm
+image3_target_path=devops/Docker/cm_utility
+
+#Docker detailis
+Docker_file_path1=devops/Docker/cm
+Docker_file_path2=devops/Docker/dm
+Docker_file_path3=devops/Docker/cm_utility
+Docker_file_path4=devops/Docker/eai
+helm_chart_path=oc-cn-helm-chart
+
+
+
+</propertiesContent>
+<secureGroovyScript plugin="script-security@1.69">
+<script/>
+<sandbox>false</sandbox>
+</secureGroovyScript>
+<loadFilesFromMaster>false</loadFilesFromMaster>
+</info>
+<on>true</on>
+<keepJenkinsSystemVariables>true</keepJenkinsSystemVariables>
+<keepBuildVariables>true</keepBuildVariables>
+<overrideBuildParameters>false</overrideBuildParameters>
+</EnvInjectJobProperty>
+</properties>
+<definition class="org.jenkinsci.plugins.workflow.cps.CpsScmFlowDefinition" plugin="workflow-cps@2.80">
+<scm class="hudson.plugins.git.GitSCM" plugin="git@4.1.1">
+<configVersion>2</configVersion>
+<userRemoteConfigs>
+<hudson.plugins.git.UserRemoteConfig>
+<url>git@cneopsvm01:devops.git</url>
+<credentialsId>user-jenkins</credentialsId>
+</hudson.plugins.git.UserRemoteConfig>
+</userRemoteConfigs>
+<branches>
+<hudson.plugins.git.BranchSpec>
+<name>*/Devops</name>
+</hudson.plugins.git.BranchSpec>
+</branches>
+<doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+<submoduleCfg class="list"/>
+<extensions/>
+</scm>
+<scriptPath>Jenkins/wrapper.jenkinsfile</scriptPath>
+<lightweight>true</lightweight>
+</definition>
+<triggers/>
+<disabled>false</disabled>
+</flow-definition>
