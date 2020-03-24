@@ -1,0 +1,58 @@
+public class Config{
+
+	public void setConfig(String toolName) {
+		String  searchToken;
+		String  newToken;
+
+		If(toolName.equals("ticket tool")){
+			searchToken = "jira";
+			newToken = "redmine";
+		}else If(toolName.equals("scm tool")){
+			searchToken = "git";
+			newToken = "bitbucket";
+		}else If(toolName.equals("CI tool")){
+			searchToken = "jenkins";
+			newToken = "bamboo";
+		}
+		//add other options here in if else statement
+
+
+		 File inputXML = new File("config.xml");
+		 BufferedReader br = null;
+		 String newString = "";
+		    StringBuilder strTotale = new StringBuilder();
+		    {
+		    try {
+
+		    FileReader reader = new FileReader(inputXML);
+		    //String search = "Jenkins";
+		   // System.out.println(search);
+
+
+		    br = new BufferedReader(reader);
+		    while ((newString = br.readLine()) != null){
+		        newString = newString.replaceAll(searchToken ,newToken );
+		        strTotale.append(newString);
+		    }
+
+		    } catch ( IOException  e) {
+		        // TODO Auto-generated catch block
+		        e.printStackTrace();
+		    } // calls it
+		    finally
+		    {
+		        try {
+		        	  br.close();
+		        } catch (IOException e) {
+		            // TODO Auto-generated catch block
+		            e.printStackTrace();
+		        }
+		    }
+
+
+		    System.out.println(strTotale.toString());
+
+		    }
+
+	}
+}
