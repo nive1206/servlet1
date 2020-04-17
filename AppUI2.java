@@ -1,0 +1,454 @@
+package com.gsc.boc.brm.ui;
+
+import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JFileChooser;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JTextField;
+import javax.swing.filechooser.FileSystemView;
+
+import com.gsc.boc.brm.entity.JenkinsJob;
+import com.gsc.boc.brm.entity.TaskSelector;
+import com.gsc.boc.brm.util.HttpConnect;
+import com.gsc.boc.brm.ui.AppUI;
+
+public class AppUI2 {
+	public JFrame jFrame;
+	TaskSelector selector= new  TaskSelector();
+	//TaskSelector select= new TaskSelector();
+	
+	/*
+	 * public AppUI2() { super(); getCredentials(); }
+	 */
+	AppUI app =new AppUI();
+	
+
+	public void setjFrame(JFrame jFrame) {
+		this.jFrame = jFrame;
+	}
+
+	public void setSelector(TaskSelector selector) {
+		this.selector = selector;
+	}
+
+	public void setApp(AppUI app) {
+		this.app = app;
+	}
+
+	public void setAlias(String alias) {
+		this.alias = alias;
+	}
+
+	public void setPasswd(String passwd) {
+		this.passwd = passwd;
+	}
+
+	public void setSiteURL(String siteURL) {
+		this.siteURL = siteURL;
+	}
+
+	String alias ;
+	String passwd ; 
+	String siteURL ; 
+	
+
+	public TaskSelector getCredentials(){
+		
+		JFrame.setDefaultLookAndFeelDecorated(true);
+		
+		jFrame = new JFrame();
+		jFrame.setBounds(500, 500, 450, 450);
+		jFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		jFrame.getContentPane().setLayout(null);
+		jFrame.setVisible(true);
+		
+		final JLabel fileLabel1 = new JLabel("Select Property file:");
+		fileLabel1.setBounds(30, 10, 133, 26);
+		jFrame.getContentPane().add(fileLabel1);
+		final JTextField fileTextField1 = new JTextField();
+		fileTextField1.setBounds(177, 10, 133, 26);
+		jFrame.getContentPane().add(fileTextField1);
+		fileTextField1.setColumns(4);
+		final JButton button1 = new JButton("open");
+		button1.setBounds(320,10, 63, 26);
+		jFrame.getContentPane().add(button1);
+		button1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser jchooser = new JFileChooser(FileSystemView.getFileSystemView().getHomeDirectory());
+				int opt = jchooser.showOpenDialog(null); 
+				if (opt == JFileChooser.APPROVE_OPTION){
+					fileTextField1.setText(jchooser.getSelectedFile().getAbsolutePath());
+				}
+			}
+		});
+		
+		final JLabel jobLabel = new JLabel("JOB Name :");
+		jobLabel.setBounds(30, 45, 133, 26);
+		jFrame.getContentPane().add(jobLabel);
+		final JTextField Jobname = new JTextField();
+		Jobname.setBounds(177, 45, 133, 26);
+		jFrame.getContentPane().add(Jobname);
+		Jobname.setColumns(4);
+		
+		
+		
+	//Ticketing	
+		JLabel taskLabel = new JLabel("Select Ticket tool : ");
+		taskLabel.setBounds(30, 75, 200, 26);
+		jFrame.getContentPane().add(taskLabel);
+		final JComboBox<String> Tasks1 = new JComboBox<String>();
+		Tasks1.addItem("-- Select --");
+		Tasks1.addItem("Jira");
+		Tasks1.addItem("Redmine");
+		Tasks1.setForeground(Color.RED);
+		Tasks1.setBounds(177, 75, 133, 26);
+		jFrame.getContentPane().add(Tasks1);
+		Tasks1.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				if(((String) Tasks1.getSelectedItem()).equals("Jira")){
+					selector.setConfigfilepath("config_Jira.xml");
+					
+				}else if((String) Tasks1.getSelectedItem()=="Redmine"){
+					selector.setConfigfilepath("config.xml");
+					
+				}else{
+					
+				}
+			}
+		});
+		//Scm tool
+		JLabel taskLabel1 = new JLabel("Select SCM tool : ");
+		taskLabel1.setBounds(30, 100, 200, 26);
+		jFrame.getContentPane().add(taskLabel1);
+		final JComboBox<String> Tasks2 = new JComboBox<String>();
+		Tasks2.addItem("-- Select --");
+		Tasks2.addItem("Git");
+		Tasks2.addItem("Bitbucket");
+		Tasks2.addItem("Subversion");
+		Tasks2.setForeground(Color.RED);
+		Tasks2.setBounds(177, 100, 133, 26);
+		jFrame.getContentPane().add(Tasks2);
+		Tasks2.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				if((String) Tasks2.getSelectedItem()=="Git"){
+					
+				}else if((String) Tasks2.getSelectedItem()=="Bitbucket"){
+					
+					
+				}else if((String) Tasks2.getSelectedItem()=="Subversion"){
+					
+				}else {
+				
+				}
+			}
+		});
+		
+		//Build App
+		JLabel taskLabel2 = new JLabel("Select Build tool : ");
+		taskLabel2.setBounds(30, 130, 200, 26);
+		jFrame.getContentPane().add(taskLabel2);
+		final JComboBox<String> Tasks3 = new JComboBox<String>();
+		Tasks3.addItem("-- Select --");
+		Tasks3.addItem("maven");
+		Tasks3.addItem("gradle");
+		Tasks3.setForeground(Color.RED);
+		Tasks3.setBounds(177, 130, 133, 26);
+		jFrame.getContentPane().add(Tasks3);
+		Tasks3.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				if((String) Tasks3.getSelectedItem()=="maven"){
+					
+				}else if((String) Tasks3.getSelectedItem()=="gradle"){
+					
+				}else {
+				
+				}
+			}
+		});
+		//CI tool
+		
+		JLabel taskLabel3 = new JLabel("Select CI tool : ");
+		taskLabel3.setBounds(30, 160, 200, 26);
+		jFrame.getContentPane().add(taskLabel3);
+		final JComboBox<String> Tasks4 = new JComboBox<String>();
+		Tasks4.addItem("-- Select --");
+		Tasks4.addItem("Jenkins");
+		Tasks4.addItem("Bamboo");
+		Tasks4.addItem("CircleCI");
+		Tasks4.setForeground(Color.RED);
+		Tasks4.setBounds(177, 160, 133, 26);
+		jFrame.getContentPane().add(Tasks4);
+		Tasks3.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				if((String) Tasks4.getSelectedItem()=="Jenkins"){
+					
+				}else if((String) Tasks4.getSelectedItem()=="Bamboo"){
+					
+				}else if((String) Tasks4.getSelectedItem()=="CircleCI"){
+				
+				}else {
+				
+				}
+			}
+		});
+		//Test Tool
+		JLabel taskLabel4 = new JLabel("Select Test tool : ");
+		taskLabel4.setBounds(30, 190, 200, 26);
+		jFrame.getContentPane().add(taskLabel4);
+		final JComboBox<String> Tasks5 = new JComboBox<String>();
+		Tasks5.addItem("-- Select --");
+		Tasks5.addItem("TestNg");
+		Tasks5.addItem("Junit");
+		Tasks5.addItem("Selenium");
+		Tasks5.setForeground(Color.RED);
+		Tasks5.setBounds(177, 190, 133, 26);
+		jFrame.getContentPane().add(Tasks5);
+		Tasks3.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				if((String) Tasks5.getSelectedItem()=="TestNg"){
+					
+				}else if((String) Tasks5.getSelectedItem()=="Junit"){
+					
+				}else if((String) Tasks5.getSelectedItem()=="Selenium"){
+				
+				}else {
+				
+				}
+			}
+		});
+		
+		//Docker Tool
+		JLabel taskLabel5 = new JLabel("Select Docker tool : ");
+		taskLabel5.setBounds(30, 220, 170, 26);
+		jFrame.getContentPane().add(taskLabel5);
+		final JComboBox<String> Tasks6 = new JComboBox<String>();
+		Tasks6.addItem("-- Select --");
+		Tasks6.addItem("Helm");
+		Tasks6.addItem("K8 yaml");
+		Tasks6.addItem("Ansible");
+		Tasks6.addItem("Chef");
+		Tasks6.setForeground(Color.RED);
+		Tasks6.setBounds(177, 220, 133, 26);
+		jFrame.getContentPane().add(Tasks6);
+		Tasks6.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				if((String) Tasks6.getSelectedItem()=="Helm"){
+					
+				}else if((String) Tasks6.getSelectedItem()=="K8 yaml"){
+					
+				}else if((String) Tasks6.getSelectedItem()=="Ansible"){
+				
+				}else if((String) Tasks6.getSelectedItem()=="Chef"){
+				
+				}else {
+				}
+			}
+		});
+		
+		//CodeScan Tool
+		JLabel taskLabel6 = new JLabel("Select CodeScan tool : ");
+		taskLabel6.setBounds(30, 250, 170, 26);
+		jFrame.getContentPane().add(taskLabel6);
+		final JComboBox<String> Tasks7 = new JComboBox<String>();
+		Tasks7.addItem("-- Select --");
+		Tasks7.addItem("SonarQube");
+		Tasks7.addItem("Parfait");
+		Tasks7.setForeground(Color.RED);
+		Tasks7.setBounds(177, 250, 133, 26);
+		jFrame.getContentPane().add(Tasks7);
+		Tasks7.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				if((String) Tasks7.getSelectedItem()=="SonarQube"){
+					
+				}else if((String) Tasks7.getSelectedItem()=="Parfait"){
+				
+				}else {
+				}
+			}
+		});
+		
+		//Repository Tool
+		JLabel taskLabel7 = new JLabel("Select Repository tool : ");
+		taskLabel7.setBounds(30, 280, 170, 26);
+		jFrame.getContentPane().add(taskLabel7);
+		final JComboBox<String> Tasks8 = new JComboBox<String>();
+		Tasks8.addItem("-- Select --");
+		Tasks8.addItem("Rubygem");
+		Tasks8.addItem("Artifactory");
+		Tasks8.addItem("Proget");
+		Tasks8.setForeground(Color.RED);
+		Tasks8.setBounds(177, 280, 133, 26);
+		jFrame.getContentPane().add(Tasks8);
+		Tasks8.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				if((String) Tasks8.getSelectedItem()=="Rubygem"){
+					
+				}else if((String) Tasks8.getSelectedItem()=="Artifactory"){
+				}else if((String) Tasks8.getSelectedItem()=="Proget"){
+				}else {
+				}
+			}
+		});
+		
+		//Monitoring tool
+		JLabel taskLabel8 = new JLabel("Select Monitoring tool : ");
+		taskLabel8.setBounds(30, 310, 170, 26);
+		jFrame.getContentPane().add(taskLabel8);
+		final JComboBox<String> Tasks9 = new JComboBox<String>();
+		Tasks9.addItem("-- Select --");
+		Tasks9.addItem("prometheus-grafana");
+		Tasks9.addItem("Elk Stack");
+		Tasks9.setForeground(Color.RED);
+		Tasks9.setBounds(177, 310, 133, 26);
+		jFrame.getContentPane().add(Tasks9);
+		Tasks9.addActionListener(new ActionListener() {
+			
+			public void actionPerformed(ActionEvent e) {
+				if((String) Tasks9.getSelectedItem()=="prometheus-grafana"){
+					
+				}else if((String) Tasks9.getSelectedItem()=="Elk Stack"){
+				
+				}else {
+				}
+			}
+		});
+		JButton runButton = new JButton("Submit"); 
+		runButton.setBounds(160, 350, 100, 30);
+		runButton.setForeground(Color.RED);
+		jFrame.getContentPane().add(runButton);
+		runButton.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				
+		     	System.out.println((String)Tasks1.getSelectedItem());
+				/*
+				 * if ((String)Tasks2.getSelectedItem()==("Git")) {
+				 * selector.setConfigfilepath("config.xml"); }else if
+				 * ((String)Tasks2.getSelectedItem()==("Subversion")) {
+				 * selector.setConfigfilepath("config_Svn.xml"); }
+				 */
+				selector.setTicketTool((String)Tasks1.getSelectedItem());
+				selector.setScmTool((String)Tasks2.getSelectedItem());
+				selector.setBuildTool((String)Tasks3.getSelectedItem());
+				selector.setCiTool((String)Tasks4.getSelectedItem());
+				selector.setTestTool((String)Tasks5.getSelectedItem());
+				selector.setDockerTool((String)Tasks6.getSelectedItem());
+				selector.setCodescanTool((String)Tasks7.getSelectedItem());
+				selector.setRepoTool((String)Tasks8.getSelectedItem());
+				selector.setMonitorTool((String)Tasks9.getSelectedItem());
+				System.out.println(selector);
+				
+				
+				
+				 
+				/*
+				 * String alias = aliasTextField.getText(); String passwd = new
+				 * String(passwdTextField.getPassword()); String siteURL = url.getText(); String
+				 * configFilePath = fileTextField1.getText();
+				 * 
+				 * 
+				 * //String uploadCred = fileTextField2.getText(); //String jobname
+				 * =job.getText();
+				 * 
+				 * 
+				 * String selected = (String) Tasks1.getSelectedItem();
+				 * if(selected.equals("Create Job")) { System.out.println(selected); JenkinsJob
+				 * job= new JenkinsJob();
+				 * 
+				 * 
+				 * 
+				 * job.setXmlFilePath(selector.getConfigfilepath()); job.setToken(passwd);
+				 * job.setUsername(alias); job.setUrl(siteURL); System.out.println("hello");
+				 * HttpConnect.sendGetRequest(url.getText(), job); System.out.println("done: "
+				 * +selected; }
+				 */
+				JenkinsJob job = new JenkinsJob();
+				String propfile = fileTextField1.getText();
+				
+				job.setPropFile(propfile);
+				
+				job.setToken(passwd);
+				job.setUsername(alias);
+				job.setUrl(siteURL);
+				String jobname =Jobname.getText();
+				job.setJobname(jobname);
+				job.setXmlFilePath(selector.getConfigfilepath());
+				
+				try {
+					if(jobname.isEmpty() || propfile.isEmpty()){
+						 JOptionPane.showMessageDialog(null,"Please enter all the required values.");
+				}else {
+				
+			//	HttpConnect.findConfig(job);
+					if(((String) Tasks1.getSelectedItem())=="Jira"){
+						System.out.println("hello");
+						BufferedReader br = new BufferedReader(new FileReader(job.getPropFile()));
+					       StringBuilder sb = new StringBuilder(); 
+					       String line = br.readLine(); 
+					       while (line != null) {
+					    	   sb.append(line).append("\n"); line = br.readLine();
+					       }
+					      String fileAsString = sb.toString();
+                           System.out.println(fileAsString);
+                           StringBuilder strTotale = new StringBuilder();
+					     String newString="";
+					     try {
+                            FileReader reader = new FileReader(job.getPropFile());
+						    String search = "pipeline_template=pipeline_template.groovy";
+						   // System.out.println(search);
+                               br = new BufferedReader(reader);
+						    while ((newString = br.readLine()) != null){
+						        newString = newString.replaceAll(search,"pipeline_template=pipeline_template_jira.groovy");
+						        strTotale.append(newString);
+						        System.out.println(fileAsString);
+						        System.out.println("hello9");
+						    } } catch ( IOException  e1) {
+						        // TODO Auto-generated catch block
+						        e1.printStackTrace();
+						    } // calls it
+						    finally
+						    {
+						        try {
+						        	  br.close();
+						        } catch (IOException e1) {
+						            // TODO Auto-generated catch block
+						            e1.printStackTrace();
+						        }
+						    }
+                             HttpConnect.sendGetRequest(siteURL, job);
+				System.out.println("done: ");
+				;
+			
+				}}}catch(Exception e1) {
+					JOptionPane.showMessageDialog(null, 
+                            e1.getMessage(),
+                            "Exception Message", 
+                             JOptionPane.ERROR_MESSAGE);
+					}
+					
+				}
+		});
+		return selector;
+		}
+	
+	}
+
